@@ -1,0 +1,1377 @@
+@import url("https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;500;600;700&display=swap");
+
+:root {
+  /* sky / cyan / slate（近 Tailwind 色阶） */
+  --sky-50: #f0f9ff;
+  --sky-100: #e0f2fe;
+  --sky-200: #bae6fd;
+  --sky-400: #38bdf8;
+  --sky-500: #0ea5e9;
+  --sky-600: #0284c7;
+  --cyan-300: #67e8f9;
+  --cyan-400: #22d3ee;
+  --cyan-500: #06b6d4;
+  --cyan-600: #0891b2;
+  --slate-300: #cbd5e1;
+  --slate-400: #94a3b8;
+  --slate-500: #64748b;
+  --slate-600: #475569;
+  --slate-700: #334155;
+  --slate-800: #1e293b;
+  --slate-900: #0f172a;
+
+  --ink: #1e293b;
+  --ink-soft: #475569;
+  --paper: #f0f9ff;
+  --paper-deep: #e0f2fe;
+  --paper-dark: #94a3b8;
+  --accent-sky: var(--sky-500);
+  --accent-cyan: var(--cyan-600);
+  --accent-slate: var(--slate-700);
+  --accent-ru: var(--slate-700);
+  --accent-dao: var(--cyan-600);
+  --accent-gold: var(--sky-500);
+
+  --shadow: 0 20px 48px rgba(15, 23, 42, 0.1);
+  --bar-track: rgba(148, 163, 184, 0.42);
+  --bar-fill: linear-gradient(
+    90deg,
+    var(--cyan-400) 0%,
+    var(--sky-500) 50%,
+    var(--sky-600) 100%
+  );
+  --tracking-wide: 0.12em;
+  --tracking-wider: 0.2em;
+  --tracking-widest: 0.28em;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family: "Noto Serif SC", "STSong", "SimSun", serif;
+  color: var(--ink);
+  background:
+    radial-gradient(ellipse 120% 80% at 50% -20%, rgba(224, 242, 254, 0.95), transparent 55%),
+    radial-gradient(ellipse 90% 60% at 100% 50%, rgba(207, 250, 254, 0.55), transparent 45%),
+    radial-gradient(ellipse 70% 50% at 0% 80%, rgba(186, 230, 253, 0.45), transparent 50%),
+    linear-gradient(
+      168deg,
+      #e0f2fe 0%,
+      #cffafe 28%,
+      #bae6fd 58%,
+      #e2e8f0 100%
+    );
+  background-attachment: fixed;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+#app {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 20px;
+}
+
+/* 进入游戏：全屏阶段背景在 #app.app--in-game::before + 首次淡入 */
+
+#app.app--in-game {
+  position: relative;
+  width: 100%;
+  max-width: none;
+  align-self: stretch;
+  padding: 28px 20px;
+  z-index: 1;
+  isolation: isolate;
+}
+
+/* 全屏场景图：`setGameBackgroundHost` 写入 `--game-bg`；cover 等比放大铺满视窗，不拉伸变形 */
+#app.app--in-game::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  background-color: #0f172a;
+  background-image: var(--game-bg);
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  pointer-events: none;
+  transition: opacity 0.45s ease;
+}
+
+#app.app--in-game > .stage {
+  position: relative;
+  z-index: 1;
+}
+
+#app.app--in-game:not(.app--fade-in-ready) {
+  opacity: 0;
+}
+
+#app.app--in-game.app--fade-in-ready {
+  opacity: 1;
+  transition: opacity 1.15s ease-in-out;
+}
+
+.stage {
+  width: min(960px, 100%);
+  background: linear-gradient(180deg, rgba(240, 249, 255, 0.92) 0%, rgba(224, 242, 254, 0.88) 100%);
+  border: 1px solid var(--slate-400);
+  border-radius: 2px;
+  box-shadow: var(--shadow);
+  padding: 32px 36px 36px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 古籍式双重内线框 */
+.stage::before {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border: 1px solid rgba(6, 182, 212, 0.38);
+  border-radius: 1px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.stage::after {
+  content: "";
+  position: absolute;
+  inset: 11px;
+  border: 1px solid rgba(14, 165, 233, 0.22);
+  border-radius: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.stage > * {
+  position: relative;
+  z-index: 1;
+}
+
+.stage.stage--game {
+  background: rgba(240, 249, 255, 0.38);
+  border: 1px solid rgba(100, 116, 139, 0.45);
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.stage.stage--game::before {
+  border-color: rgba(6, 182, 212, 0.28);
+}
+
+.stage.stage--game::after {
+  border-color: rgba(14, 165, 233, 0.14);
+}
+
+.title-cn {
+  font-family: "Ma Shan Zheng", "Noto Serif SC", serif;
+  font-weight: 400;
+  letter-spacing: var(--tracking-wider);
+  color: var(--slate-800);
+  margin: 0;
+  text-align: center;
+}
+
+.title-cn.hero {
+  font-size: clamp(40px, 6vw, 64px);
+}
+
+.subtitle {
+  text-align: center;
+  letter-spacing: var(--tracking-widest);
+  color: var(--slate-600);
+  opacity: 0.88;
+  margin-top: 4px;
+  font-size: 14px;
+}
+
+button.primary {
+  appearance: none;
+  border: 1px solid var(--slate-600);
+  background: linear-gradient(180deg, var(--cyan-600) 0%, var(--sky-600) 100%);
+  color: var(--sky-50);
+  font-family: inherit;
+  font-size: 18px;
+  letter-spacing: var(--tracking-wider);
+  padding: 12px 36px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: transform 120ms ease, filter 120ms ease, box-shadow 120ms ease;
+}
+
+button.primary:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(8, 145, 178, 0.28);
+}
+
+button.ghost {
+  appearance: none;
+  background: transparent;
+  border: 1px solid var(--slate-400);
+  color: var(--slate-600);
+  font-family: inherit;
+  font-size: 14px;
+  letter-spacing: var(--tracking-wide);
+  padding: 8px 18px;
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+button.ghost:hover {
+  background: rgba(224, 242, 254, 0.65);
+}
+
+/* Menu */
+.menu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  padding: 36px 0 24px;
+}
+
+.menu .blurb {
+  max-width: 640px;
+  text-align: center;
+  line-height: 1.9;
+  color: var(--slate-600);
+  font-size: 16px;
+  letter-spacing: var(--tracking-wide);
+}
+
+/* Quiz */
+.quiz {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 28px;
+  align-items: start;
+}
+
+@media (max-width: 720px) {
+  .quiz {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+}
+
+.portrait-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  max-width: 240px;
+}
+
+.portrait-frame {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  border-radius: 2px;
+  overflow: hidden;
+  background: linear-gradient(180deg, var(--sky-100), var(--slate-300));
+  box-shadow: inset 0 0 0 1px rgba(51, 65, 85, 0.12), 0 6px 18px rgba(15, 23, 42, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.portrait-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* 游戏内：题干与选项半透明，透出全屏背景；立绘无背板框 */
+.stage--game .quiz .portrait-frame {
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
+  overflow: visible;
+}
+
+.stage--game .quiz .portrait-frame img {
+  border-radius: 2px;
+  filter: drop-shadow(0 8px 20px rgba(15, 23, 42, 0.2));
+}
+
+.stage--game .q-meta {
+  color: rgba(51, 65, 85, 0.95);
+  text-shadow: 0 0 10px rgba(240, 249, 255, 0.9);
+  letter-spacing: var(--tracking-wider);
+}
+
+.stage--game .q-text {
+  background: rgba(240, 249, 255, 0.28);
+  border-left: 3px solid rgba(8, 145, 178, 0.65);
+  color: rgba(30, 41, 59, 0.96);
+  text-shadow: 0 0 12px rgba(240, 249, 255, 0.85);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border-radius: 0 2px 2px 0;
+  padding: 8px 12px 8px 16px;
+}
+
+.stage--game .option {
+  background: rgba(240, 249, 255, 0.22);
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  color: rgba(30, 41, 59, 0.96);
+  text-shadow: 0 0 10px rgba(240, 249, 255, 0.75);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.stage--game .option:hover:not(:disabled) {
+  background: rgba(224, 242, 254, 0.42);
+  border-color: rgba(14, 165, 233, 0.45);
+}
+
+.stage--game .option::before {
+  background: linear-gradient(180deg, var(--cyan-400), var(--sky-500));
+  box-shadow: 2px 0 10px rgba(8, 145, 178, 0.35);
+}
+
+.stage--game .option .letter {
+  text-shadow: 0 0 8px rgba(240, 249, 255, 0.9);
+  color: var(--cyan-600);
+}
+
+.stage--game .cult-progress .labels {
+  color: rgba(51, 65, 85, 0.95);
+  text-shadow: 0 0 8px rgba(240, 249, 255, 0.88);
+  letter-spacing: var(--tracking-widest);
+}
+
+.stage--game .cult-progress .track {
+  background: rgba(148, 163, 184, 0.38);
+  border-color: rgba(148, 163, 184, 0.55);
+  border-radius: 2px;
+}
+
+.stage--game .minigame .hint,
+.stage--game .mg-status {
+  color: rgba(51, 65, 85, 0.95);
+  text-shadow: 0 0 10px rgba(240, 249, 255, 0.85);
+  letter-spacing: var(--tracking-widest);
+}
+
+.stage--game .minigame .hint {
+  font-size: 14px;
+}
+
+.stage--game .mg-canvas-wrap canvas {
+  background: rgba(224, 242, 254, 0.65);
+  border-color: rgba(14, 165, 233, 0.35);
+  border-radius: 2px;
+}
+
+.stage--game .age-band {
+  text-shadow: 0 0 10px rgba(240, 249, 255, 0.9);
+  color: var(--cyan-600);
+}
+
+.stage--game .age-meta {
+  text-shadow: 0 0 8px rgba(240, 249, 255, 0.85);
+  letter-spacing: var(--tracking-wider);
+}
+
+.age-band {
+  font-family: "Ma Shan Zheng", serif;
+  font-size: 22px;
+  letter-spacing: var(--tracking-wider);
+  color: var(--cyan-600);
+}
+
+.age-meta {
+  font-size: 13px;
+  color: var(--slate-600);
+  opacity: 0.82;
+  letter-spacing: var(--tracking-wide);
+}
+
+.question-area {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.q-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 13px;
+  letter-spacing: var(--tracking-wider);
+  color: var(--slate-600);
+  opacity: 0.88;
+}
+
+.q-text {
+  font-size: 22px;
+  line-height: 1.6;
+  color: var(--ink);
+  border-left: 3px solid var(--cyan-500);
+  padding: 4px 0 4px 16px;
+  border-radius: 0 2px 2px 0;
+}
+
+.options {
+  display: grid;
+  gap: 12px;
+}
+
+.option {
+  appearance: none;
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+  background: rgba(240, 249, 255, 0.72);
+  border: 1px solid var(--slate-300);
+  border-radius: 2px;
+  padding: 14px 18px;
+  font-family: inherit;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--ink);
+  cursor: pointer;
+  display: grid;
+  grid-template-columns: 32px 1fr;
+  gap: 12px;
+  align-items: start;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+/* 竹简 / 书签式左侧青色指示：悬停时自左展开 */
+.option::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  background: linear-gradient(180deg, var(--cyan-400), var(--sky-500));
+  box-shadow: 2px 0 10px rgba(8, 145, 178, 0.3);
+  transition: width 0.26s cubic-bezier(0.22, 1, 0.36, 1);
+  z-index: 0;
+  border-radius: 0 1px 1px 0;
+}
+
+.option:hover:not(:disabled)::before {
+  width: 5px;
+}
+
+.option > * {
+  position: relative;
+  z-index: 1;
+}
+
+.option:hover:not(:disabled) {
+  background: rgba(224, 242, 254, 0.92);
+  border-color: var(--sky-400);
+  box-shadow: 0 2px 14px rgba(14, 165, 233, 0.12);
+}
+
+.option .letter {
+  font-family: "Ma Shan Zheng", serif;
+  color: var(--cyan-600);
+  font-size: 22px;
+}
+
+/* Progress bar (top) */
+.cult-progress {
+  margin-bottom: 24px;
+}
+
+.cult-progress .labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  letter-spacing: var(--tracking-widest);
+  color: var(--slate-600);
+  margin-bottom: 6px;
+}
+
+.cult-progress .track {
+  position: relative;
+  height: 14px;
+  background: var(--bar-track);
+  border-radius: 2px;
+  overflow: hidden;
+  border: 1px solid rgba(100, 116, 139, 0.35);
+}
+
+.cult-progress .fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--bar-fill);
+  transition: width 320ms ease;
+  width: 0%;
+}
+
+.cult-progress .ticks {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(30, 1fr);
+  pointer-events: none;
+}
+
+.cult-progress .ticks span {
+  border-right: 1px solid rgba(255, 255, 255, 0.55);
+}
+
+.cult-progress .ticks span:last-child {
+  border-right: none;
+}
+
+/* 儒 / 道 辨识 */
+.school-guess {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 22px;
+  padding: 12px 0 20px;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.school-guess-prompt {
+  font-size: 17px;
+  letter-spacing: var(--tracking-wider);
+  color: var(--slate-700);
+  text-align: center;
+  line-height: 1.65;
+  margin: 0;
+}
+
+.school-guess-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  width: 100%;
+}
+
+.school-btn {
+  min-height: 120px;
+  font-family: "Noto Serif SC", serif;
+  font-size: clamp(36px, 8vw, 52px);
+  font-weight: 700;
+  letter-spacing: 0.35em;
+  text-indent: 0.35em;
+  border-radius: 4px;
+  border: 2px solid rgba(30, 41, 59, 0.35);
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.school-btn:disabled {
+  cursor: default;
+  opacity: 0.85;
+}
+
+.school-btn--ru {
+  color: #7f1d1d;
+  background: linear-gradient(
+    165deg,
+    rgba(254, 226, 226, 0.95),
+    rgba(252, 165, 165, 0.55)
+  );
+  box-shadow: 0 8px 24px rgba(127, 29, 29, 0.12);
+}
+
+.school-btn--ru:hover:not(:disabled) {
+  transform: translateY(-2px);
+  border-color: rgba(185, 28, 28, 0.45);
+  box-shadow: 0 12px 28px rgba(127, 29, 29, 0.18);
+}
+
+.school-btn--dao {
+  color: #0c4a6e;
+  background: linear-gradient(
+    165deg,
+    rgba(224, 242, 254, 0.98),
+    rgba(125, 211, 252, 0.45)
+  );
+  box-shadow: 0 8px 24px rgba(14, 116, 144, 0.14);
+}
+
+.school-btn--dao:hover:not(:disabled) {
+  transform: translateY(-2px);
+  border-color: rgba(8, 145, 178, 0.45);
+  box-shadow: 0 12px 28px rgba(14, 116, 144, 0.2);
+}
+
+.school-result {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 8px 4px 16px;
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.school-result-title {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: var(--tracking-widest);
+  margin: 0;
+  text-align: center;
+}
+
+.school-result-title.is-correct {
+  color: var(--cyan-700);
+}
+
+.school-result-title.is-wrong {
+  color: #9a3412;
+}
+
+.school-result-meta {
+  font-size: 14px;
+  letter-spacing: var(--tracking-wider);
+  color: var(--slate-600);
+  text-align: center;
+  margin: 0;
+}
+
+.school-result-explain {
+  font-size: 15px;
+  line-height: 1.75;
+  letter-spacing: 0.04em;
+  color: var(--slate-800);
+  margin: 0;
+  padding: 14px 16px;
+  background: rgba(248, 250, 252, 0.88);
+  border: 1px solid rgba(100, 116, 139, 0.28);
+  border-radius: 4px;
+}
+
+.school-result .school-continue {
+  align-self: center;
+  margin-top: 6px;
+}
+
+/* Minigame */
+.minigame {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  padding: 16px 0 8px;
+}
+
+.minigame .hint {
+  font-size: 14px;
+  letter-spacing: var(--tracking-widest);
+  color: var(--slate-600);
+}
+
+.kbd {
+  display: inline-block;
+  padding: 2px 10px;
+  border: 1px solid var(--slate-500);
+  border-radius: 2px;
+  background: rgba(240, 249, 255, 0.9);
+  font-family: "Noto Serif SC", monospace;
+  font-size: 14px;
+  margin: 0 4px;
+  letter-spacing: var(--tracking-wider);
+  color: var(--slate-700);
+}
+
+.mg-canvas-wrap {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.mg-canvas-wrap canvas {
+  width: 100%;
+  max-width: 720px;
+  height: 64px;
+  background: linear-gradient(180deg, var(--sky-100), var(--sky-200));
+  border-radius: 2px;
+  border: 1px solid rgba(14, 165, 233, 0.28);
+  display: block;
+}
+
+.mg-status {
+  font-size: 16px;
+  letter-spacing: var(--tracking-widest);
+  color: var(--cyan-600);
+  min-height: 24px;
+}
+
+.mg-flash {
+  animation: mgFlashCyan 0.38s ease;
+}
+
+@keyframes mgFlashCyan {
+  0% {
+    background: rgba(207, 250, 254, 0.55);
+  }
+  100% {
+    background: transparent;
+  }
+}
+
+.mg-memory-slot {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.memory-board {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  width: 100%;
+  max-width: 420px;
+  margin: 12px auto 0;
+}
+
+.memory-board--done {
+  pointer-events: none;
+  opacity: 0.92;
+}
+
+@media (max-width: 520px) {
+  .memory-board {
+    grid-template-columns: repeat(3, 1fr);
+    max-width: 100%;
+  }
+}
+
+.memory-card {
+  aspect-ratio: 1;
+  border-radius: 2px;
+  border: 1px solid var(--slate-400);
+  background: linear-gradient(160deg, rgba(240, 249, 255, 0.95), rgba(224, 242, 254, 0.85));
+  cursor: pointer;
+  font-family: inherit;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    transform 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+  min-height: 72px;
+}
+
+.memory-card:hover:not(:disabled) {
+  border-color: var(--sky-500);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(14, 165, 233, 0.15);
+}
+
+.memory-card:disabled {
+  cursor: default;
+}
+
+.memory-card--down {
+  background: linear-gradient(160deg, var(--slate-700), var(--slate-800));
+  border-color: var(--slate-600);
+}
+
+.memory-card--down:hover:not(:disabled) {
+  border-color: var(--cyan-400);
+}
+
+.memory-card--up {
+  background: linear-gradient(160deg, var(--sky-50), var(--sky-100));
+}
+
+.memory-card--matched {
+  border-color: var(--cyan-500);
+  box-shadow: inset 0 0 0 2px rgba(6, 182, 212, 0.35);
+  opacity: 0.96;
+}
+
+.memory-icon {
+  font-size: clamp(28px, 7vw, 40px);
+  line-height: 1;
+}
+
+.memory-back {
+  font-family: "Ma Shan Zheng", serif;
+  font-size: 28px;
+  color: var(--sky-100);
+  letter-spacing: 0;
+}
+
+.hint-inline {
+  font-size: 13px;
+  letter-spacing: var(--tracking-wider);
+  color: var(--slate-600);
+  font-weight: 400;
+}
+
+/* Result */
+.result {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+
+.result--disciple {
+  gap: 20px;
+}
+
+.result-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.result-portrait-center {
+  width: min(420px, 88vw);
+  max-height: min(72vh, 560px);
+  margin: 0 auto;
+  border-radius: 2px;
+  overflow: hidden;
+  background: linear-gradient(180deg, var(--sky-100), var(--sky-200));
+  box-shadow:
+    inset 0 0 0 1px rgba(14, 165, 233, 0.2),
+    0 16px 40px rgba(15, 23, 42, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.result-portrait-img {
+  width: 100%;
+  height: auto;
+  max-height: min(72vh, 560px);
+  object-fit: contain;
+  display: block;
+}
+
+.result--disciple .name {
+  margin: 0;
+}
+
+.result--disciple .seal {
+  margin: 0;
+  font-size: 16px;
+  letter-spacing: var(--tracking-widest);
+}
+
+.result .seal {
+  font-family: "Ma Shan Zheng", serif;
+  letter-spacing: var(--tracking-widest);
+  color: var(--cyan-600);
+  font-size: 18px;
+}
+
+.result .name {
+  font-family: "Ma Shan Zheng", serif;
+  font-size: 64px;
+  letter-spacing: var(--tracking-wider);
+  margin: 4px 0 0;
+  color: var(--slate-800);
+}
+
+.result .school {
+  font-size: 14px;
+  letter-spacing: var(--tracking-widest);
+  color: var(--sky-600);
+}
+
+.result .portrait-frame {
+  width: min(280px, 70%);
+  aspect-ratio: 3 / 4;
+  margin-top: 12px;
+}
+
+.result-portrait-fangu img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.result .verse {
+  font-style: italic;
+  color: var(--slate-600);
+  max-width: 520px;
+  line-height: 1.9;
+  letter-spacing: var(--tracking-wide);
+}
+
+.result .desc {
+  max-width: 640px;
+  line-height: 1.9;
+  color: var(--slate-800);
+  text-align: left;
+  letter-spacing: var(--tracking-wide);
+}
+
+.result .actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+/* 八维弟子结局长页 */
+.result--disciple-page {
+  width: 100%;
+  max-width: min(720px, 100%);
+  margin: 0 auto;
+  align-self: stretch;
+  max-height: min(92vh, 900px);
+  overflow-y: auto;
+  padding-bottom: 8px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.result-outcome-head {
+  font-size: clamp(22px, 4.2vw, 34px) !important;
+  line-height: 1.35;
+  letter-spacing: var(--tracking-wide) !important;
+  max-width: 100%;
+}
+
+.result-meta-dl {
+  margin: 8px 0 0;
+  padding: 0;
+  width: 100%;
+  max-width: 560px;
+  text-align: left;
+}
+
+.result-meta-row {
+  display: grid;
+  grid-template-columns: 6.5em 1fr;
+  gap: 10px 16px;
+  margin: 0 0 10px;
+  font-size: 15px;
+  line-height: 1.65;
+  letter-spacing: var(--tracking-wide);
+}
+
+.result-meta-row dt {
+  margin: 0;
+  color: var(--slate-600);
+  font-weight: 600;
+}
+
+.result-meta-row dd {
+  margin: 0;
+  color: var(--slate-800);
+}
+
+.result-body-blocks {
+  width: 100%;
+  max-width: 640px;
+  margin: 4px auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  text-align: left;
+}
+
+.result-block {
+  margin: 0;
+}
+
+.result-block-h {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: var(--tracking-widest);
+  color: var(--cyan-700);
+  margin: 0 0 8px;
+  border-bottom: 1px solid rgba(8, 145, 178, 0.22);
+  padding-bottom: 6px;
+}
+
+.result-block-p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.85;
+  color: var(--slate-800);
+  letter-spacing: var(--tracking-wide);
+}
+
+.stage--game.result .result-portrait-center {
+  background: transparent;
+  box-shadow: none;
+}
+
+.stage--game.result .portrait-frame {
+  background: transparent;
+  box-shadow: none;
+}
+
+.stage--game.result .verse,
+.stage--game.result .desc {
+  text-shadow: 0 0 12px rgba(240, 249, 255, 0.85);
+}
+
+.stage--game.result .name {
+  text-shadow: 0 0 18px rgba(224, 242, 254, 0.9);
+}
+
+.divider {
+  width: 80px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--sky-500), transparent);
+  opacity: 0.75;
+  margin: 4px auto;
+}
+
+/* Phase transition (age band)：少色块，立绘与全屏背景直接相衬 */
+.stage.phase-overlay {
+  padding-top: 28px;
+  padding-bottom: 40px;
+}
+
+.stage.phase-overlay::before,
+.stage.phase-overlay::after {
+  display: none;
+}
+
+.stage.phase-overlay.stage--game {
+  width: min(960px, 100%);
+  margin: 0 auto;
+  background: transparent;
+  border: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
+}
+
+.stage.phase-overlay.stage--game .phase-portrait-wrap {
+  background: transparent;
+  box-shadow: none;
+}
+
+.phase-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 8px 24px;
+  min-height: 380px;
+  justify-content: center;
+}
+
+.phase-kicker {
+  font-family: "Ma Shan Zheng", serif;
+  font-size: 26px;
+  letter-spacing: var(--tracking-widest);
+  color: var(--slate-800);
+  margin: 0;
+  text-shadow: 0 0 12px rgba(240, 249, 255, 0.9);
+}
+
+.phase-sub {
+  margin: 0;
+  font-size: 14px;
+  letter-spacing: var(--tracking-wider);
+  color: var(--slate-600);
+  opacity: 0.9;
+  text-shadow: 0 0 10px rgba(240, 249, 255, 0.85);
+}
+
+.phase-portrait-wrap {
+  width: min(300px, 70vw);
+  aspect-ratio: 3 / 4;
+  border-radius: 2px;
+  overflow: hidden;
+  background: transparent;
+  box-shadow: none;
+  transition:
+    transform 0.78s cubic-bezier(0.33, 0.9, 0.35, 1),
+    opacity 0.55s ease;
+  transform-origin: center center;
+}
+
+.phase-portrait-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.phase-portrait-morph {
+  animation: phaseMorphPulse 0.55s ease;
+}
+
+@keyframes phaseMorphPulse {
+  0%,
+  100% {
+    filter: brightness(1);
+    transform: scale(1);
+  }
+  50% {
+    filter: brightness(1.12);
+    transform: scale(1.04);
+  }
+}
+
+.phase-portrait-return {
+  transform: translate(clamp(-160px, -32vw, -80px), clamp(40px, 8vh, 100px))
+    scale(0.44);
+  opacity: 0;
+}
+
+.phase-hint {
+  margin: 4px 0 0;
+  font-size: 15px;
+  letter-spacing: var(--tracking-wider);
+  color: var(--slate-700);
+  text-shadow: 0 0 10px rgba(240, 249, 255, 0.88);
+}
+
+.stage.phase-overlay .growth-track {
+  display: none;
+}
+
+.growth-track {
+  width: min(420px, 92%);
+  height: 16px;
+  background: rgba(148, 163, 184, 0.35);
+  border-radius: 2px;
+  overflow: hidden;
+  border: 1px solid rgba(100, 116, 139, 0.3);
+}
+
+.growth-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(
+    90deg,
+    var(--cyan-400) 0%,
+    var(--sky-500) 50%,
+    var(--sky-600) 100%
+  );
+  transition: width 90ms ease-out;
+}
+
+.phase-progress-label {
+  margin: 0;
+  font-size: 13px;
+  letter-spacing: var(--tracking-widest);
+  color: var(--slate-600);
+  text-shadow: 0 0 8px rgba(240, 249, 255, 0.9);
+}
+
+.stage.phase-overlay .phase-progress-label {
+  margin-top: 4px;
+}
+
+.phase-overlay.phase-leaving {
+  opacity: 0;
+  transition: opacity 0.45s ease;
+}
+
+.phase-overlay.phase-leaving .phase-inner {
+  pointer-events: none;
+}
+
+/* —— 结局前：儒 / 道 全屏揭晓 —— */
+.school-reveal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.38s ease;
+  pointer-events: none;
+}
+
+.school-reveal-overlay--visible {
+  opacity: 1;
+}
+
+.school-reveal-overlay--exiting {
+  opacity: 0;
+  transition: opacity 0.48s ease;
+}
+
+.school-reveal-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 55% 50% at 50% 45%,
+    rgba(15, 23, 42, 0) 0%,
+    rgba(15, 23, 42, 0.45) 100%
+  );
+  pointer-events: none;
+}
+
+.school-reveal-burst-wrap {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.school-reveal-burst {
+  position: relative;
+  width: 160vmax;
+  height: 160vmax;
+  flex-shrink: 0;
+  opacity: 0.22;
+  animation: schoolRevealBurstSpin 14s linear infinite;
+  pointer-events: none;
+}
+
+.school-reveal-overlay--ru .school-reveal-burst {
+  background: conic-gradient(
+    from 0deg,
+    rgba(254, 202, 202, 0.9),
+    rgba(185, 28, 28, 0.35),
+    rgba(254, 243, 199, 0.75),
+    rgba(254, 202, 202, 0.9)
+  );
+  filter: blur(60px);
+}
+
+.school-reveal-overlay--dao .school-reveal-burst {
+  background: conic-gradient(
+    from 40deg,
+    rgba(125, 211, 252, 0.85),
+    rgba(14, 116, 144, 0.4),
+    rgba(207, 250, 254, 0.8),
+    rgba(125, 211, 252, 0.85)
+  );
+  filter: blur(58px);
+}
+
+.school-reveal-shards {
+  position: absolute;
+  inset: 0;
+  opacity: 0.18;
+  background-image: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.55) 0.5px,
+    transparent 0.6px
+  );
+  background-size: 14px 14px;
+  animation: schoolRevealShardsDrift 2.2s linear infinite;
+  pointer-events: none;
+}
+
+.school-reveal-inner {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.school-reveal-char {
+  font-family: "Ma Shan Zheng", "Noto Serif SC", serif;
+  font-size: min(46vw, 300px);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: 0.2em;
+  text-indent: 0.2em;
+  display: inline-block;
+  animation:
+    schoolRevealCharPulse 0.85s ease-in-out infinite alternate,
+    schoolRevealCharGlow 1.15s ease-in-out infinite;
+  will-change: transform, filter;
+}
+
+.school-reveal-overlay--ru .school-reveal-char {
+  color: #7f1d1d;
+  text-shadow:
+    0 0 20px rgba(254, 226, 226, 0.95),
+    0 0 48px rgba(248, 113, 113, 0.55),
+    0 0 90px rgba(185, 28, 28, 0.35);
+}
+
+.school-reveal-overlay--dao .school-reveal-char {
+  color: #0c4a6e;
+  text-shadow:
+    0 0 22px rgba(224, 242, 254, 0.95),
+    0 0 52px rgba(34, 211, 238, 0.45),
+    0 0 96px rgba(8, 145, 178, 0.4);
+}
+
+.school-reveal-overlay--exiting .school-reveal-char {
+  animation: none;
+  transform: scale(1.12);
+  filter: blur(3px);
+  opacity: 0.85;
+  transition:
+    transform 0.48s cubic-bezier(0.4, 0, 0.2, 1),
+    filter 0.48s ease,
+    opacity 0.48s ease;
+}
+
+@keyframes schoolRevealBurstSpin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@keyframes schoolRevealShardsDrift {
+  to {
+    transform: translate(14px, 10px);
+  }
+}
+
+@keyframes schoolRevealCharPulse {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.07);
+  }
+}
+
+@keyframes schoolRevealCharGlow {
+  0%,
+  100% {
+    filter: brightness(1) drop-shadow(0 0 12px rgba(255, 255, 255, 0.25));
+  }
+  50% {
+    filter: brightness(1.12) drop-shadow(0 0 28px rgba(255, 255, 255, 0.45));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .school-reveal-burst,
+  .school-reveal-shards {
+    animation: none;
+  }
+
+  .school-reveal-char {
+    animation: none;
+  }
+}
